@@ -1,18 +1,18 @@
 
 import React, { useState, useEffect } from 'react';
-import { NewsArticle, AppNotification, SearchResult, NewsTopic, AdminPost } from '../types';
-import { MOCK_ARTICLES, MOCK_NOTIFICATIONS } from '../constants';
-import { generateNewsFeed, performSearch } from '../services/newsService';
-import { supabase } from '../lib/supabaseClient';
+import { NewsArticle, AppNotification, SearchResult, NewsTopic, AdminPost } from './types';
+import { MOCK_ARTICLES, MOCK_NOTIFICATIONS } from './constants';
+import { generateNewsFeed, performSearch } from './services/newsService';
+import { supabase } from './lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
-import { ArticleCard } from '../components/ArticleCard';
-import { ArticleDetail } from '../components/ArticleDetail';
-import { UserProfile } from '../components/UserProfile';
-import { NotificationsCenter } from '../components/NotificationsCenter';
-import { SearchView } from '../components/SearchView';
-import { AdminFeed } from '../components/AdminFeed';
-import { LandingPage } from '../components/LandingPage';
-import { AuthPage } from '../components/AuthPage';
+import { ArticleCard } from './components/ArticleCard';
+import { ArticleDetail } from './components/ArticleDetail';
+import { UserProfile } from './components/UserProfile';
+import { NotificationsCenter } from './components/NotificationsCenter';
+import { SearchView } from './components/SearchView';
+import { AdminFeed } from './components/AdminFeed';
+import { LandingPage } from './components/LandingPage';
+import { AuthPage } from './components/AuthPage';
 import {
   Bell, Search, Newspaper, RefreshCw, Loader2,
   Sparkles, Home, ArrowLeft, X, Globe,
