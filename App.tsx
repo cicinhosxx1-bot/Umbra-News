@@ -19,19 +19,19 @@ import {
   Bell, Search, Newspaper, RefreshCw, Loader2,
   Sparkles, Home, ArrowLeft, X, Globe,
   Briefcase, Monitor, Music, Trophy, FlaskConical, HeartPulse, MapPin, User as UserIcon,
-  TrendingUp, Landmark, GraduationCap, BookOpen, Leaf, Palette, Film, Smile, Map
+  TrendingUp, Landmark, GraduationCap, BookOpen, Leaf, Palette, Film, Smile, Map, Lock, Crown, BadgeCheck
 } from 'lucide-react';
 
-const TOPICS: { id: NewsTopic; label: string; icon: React.ReactNode }[] = [
+const TOPICS: { id: NewsTopic; label: string; icon: React.ReactNode; isPro?: boolean }[] = [
   { id: 'Economia', label: 'Economia', icon: <TrendingUp className="w-4 h-4" /> },
-  { id: 'Política', label: 'Política', icon: <Landmark className="w-4 h-4" /> },
+  { id: 'Política', label: 'Política', icon: <Landmark className="w-4 h-4" />, isPro: true },
   { id: 'Tecnologia', label: 'Tecnologia', icon: <Monitor className="w-4 h-4" /> },
-  { id: 'Concursos e Emprego', label: 'Concursos', icon: <Briefcase className="w-4 h-4" /> },
+  { id: 'Concursos e Emprego', label: 'Concursos', icon: <Briefcase className="w-4 h-4" />, isPro: true },
   { id: 'Educação', label: 'Educação', icon: <BookOpen className="w-4 h-4" /> },
-  { id: 'Ciência e Saúde', label: 'Ciência & Saúde', icon: <HeartPulse className="w-4 h-4" /> },
+  { id: 'Ciência e Saúde', label: 'Ciência & Saúde', icon: <HeartPulse className="w-4 h-4" />, isPro: true },
   { id: 'Natureza', label: 'Natureza', icon: <Leaf className="w-4 h-4" /> },
   { id: 'Cultura', label: 'Cultura', icon: <Palette className="w-4 h-4" /> },
-  { id: 'Cinema', label: 'Cinema', icon: <Film className="w-4 h-4" /> },
+  { id: 'Cinema', label: 'Cinema', icon: <Film className="w-4 h-4" />, isPro: true },
   { id: 'Música', label: 'Música', icon: <Music className="w-4 h-4" /> },
   { id: 'Bem Estar', label: 'Bem Estar', icon: <Smile className="w-4 h-4" /> },
   { id: 'Turismo e Viagem', label: 'Turismo', icon: <Map className="w-4 h-4" /> },
@@ -309,6 +309,9 @@ const App: React.FC = () => {
                     }`}
                 >
                   {topic.icon} {topic.label}
+                  {topic.isPro && currentUser?.subscription === 'Free' && (
+                    <Lock className="w-3 h-3 text-amber-500 ml-1" />
+                  )}
                 </button>
               ))}
             </div>
@@ -322,7 +325,14 @@ const App: React.FC = () => {
           <main className="mt-8 animate-in fade-in duration-700">
             <div className="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
               <div className="flex flex-col">
-                <h2 className="text-3xl font-serif font-bold text-slate-900">{TOPICS.find(t => t.id === selectedTopic)?.label}</h2>
+                <h2 className="text-3xl font-serif font-bold text-slate-900">
+                  {TOPICS.find(t => t.id === selectedTopic)?.label}
+                  {TOPICS.find(t => t.id === selectedTopic)?.isPro && (
+                    <span className="ml-3 inline-flex items-center px-3 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-600 uppercase tracking-widest border border-amber-200">
+                      PRO
+                    </span>
+                  )}
+                </h2>
                 <p className="text-sm text-slate-500 mt-1">IA curando fatos reais via Google News Grounding</p>
               </div>
               <button onClick={() => fetchNews()} disabled={isLoading} className="p-2 bg-white border border-slate-200 rounded-xl text-slate-700 hover:text-indigo-600 disabled:opacity-50 transition-all">
@@ -330,7 +340,37 @@ const App: React.FC = () => {
               </button>
             </div>
 
-            {isLoading && articles.length === 0 ? (
+            {TOPICS.find(t => t.id === selectedTopic)?.isPro && currentUser?.subscription === 'Free' ? (
+              <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm animate-in zoom-in duration-300">
+                <div className="bg-indigo-600 h-2 w-full"></div>
+                <div className="p-12 flex flex-col items-center text-center">
+                  <div className="w-20 h-20 bg-amber-50 rounded-3xl flex items-center justify-center mb-6 border border-amber-100 shadow-sm">
+                    <Crown className="w-10 h-10 text-amber-500" />
+                  </div>
+                  <h3 className="text-2xl font-serif font-bold text-slate-900 mb-3">Conteúdo Exclusivo Umbra PRO</h3>
+                  <p className="text-slate-500 max-w-md mb-8 leading-relaxed">
+                    Tópico restrito para assinantes. Tenha acesso a análises profundas,
+                    checagem de fatos avançada e cobertura completa em <strong>{TOPICS.find(t => t.id === selectedTopic)?.label}</strong>.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-lg mb-8">
+                    {['Análises sem viés ilimitadas', 'Alertas de checagem em tempo real', 'Filtros personalizados', 'Sem anúncios'].map(feat => (
+                      <div key={feat} className="flex items-center gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <BadgeCheck className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                        <span className="text-sm font-medium text-slate-700">{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <button className="w-full max-w-sm py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 transition-all transform hover:-translate-y-0.5 active:scale-95">
+                    Assinar Umbra PRO — R$ 19,90/mês
+                  </button>
+                  <button className="mt-4 text-slate-400 text-sm font-medium hover:text-slate-600 transition-colors">
+                    Ver todos os planos
+                  </button>
+                </div>
+              </div>
+            ) : isLoading && articles.length === 0 ? (
               <div className="h-96 w-full flex flex-col items-center justify-center gap-4 bg-white rounded-3xl border border-dashed border-slate-200 animate-pulse">
                 <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
                 <p className="text-slate-400 font-bold text-sm">Escaneando o espectro de notícias...</p>
