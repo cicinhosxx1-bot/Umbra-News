@@ -35,7 +35,7 @@ const fetchFromGoogleNewsRSS = async (topic: string): Promise<NewsArticle[]> => 
  * Tenta primeiro o Google News RSS via Edge Function.
  * Se falhar, usa o Gemini com Google Search Grounding como fallback.
  */
-export const generateNewsFeed = async (topic: string = 'Trending'): Promise<NewsArticle[]> => {
+export const generateNewsFeed = async (topic: string = 'Economia'): Promise<NewsArticle[]> => {
   // Tentativa 1: Google News RSS via Supabase Edge Function
   try {
     console.log(`[NewsService] Buscando RSS para tópico: ${topic}`);
@@ -48,13 +48,13 @@ export const generateNewsFeed = async (topic: string = 'Trending'): Promise<News
 
   // Fallback: Gemini com Google Search Grounding
   try {
-    const topicPrompt = topic === 'Trending'
-      ? "as notícias mais importantes e reais de hoje no mundo"
+    const topicPrompt = topic === 'Economia'
+      ? "as notícias mais importantes e reais de hoje sobre economia"
       : `notícias reais e recentes sobre o tópico: "${topic}"`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Atue como um editor senior do Google News. Identifique ${topic === 'Trending' ? '5' : '4'} ${topicPrompt}. 
+      contents: `Atue como um editor senior do Google News. Identifique ${topic === 'Economia' ? '5' : '4'} ${topicPrompt}. 
       Para cada notícia, extraia dados reais via busca e gere uma análise de viés (Bias), um resumo executivo e duas perspectivas contrastantes. 
       Formate estritamente como JSON.`,
       config: {

@@ -1,7 +1,7 @@
 
 export type BiasLevel = 'Left' | 'Center-Left' | 'Center' | 'Center-Right' | 'Right';
 
-export type NewsTopic = 'Trending' | 'Mundo' | 'Brasil' | 'Negócios' | 'Tecnologia' | 'Entretenimento' | 'Esportes' | 'Ciência' | 'Saúde';
+export type NewsTopic = 'Economia' | 'Política' | 'Tecnologia' | 'Concursos e Emprego' | 'Educação' | 'Ciência e Saúde' | 'Natureza' | 'Cultura' | 'Cinema' | 'Música' | 'Bem Estar' | 'Turismo e Viagem';
 
 export interface NewsPerspective {
   source: string;

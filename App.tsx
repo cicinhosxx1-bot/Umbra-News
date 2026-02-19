@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { NewsArticle, AppNotification, SearchResult, NewsTopic, AdminPost } from './types';
-import { MOCK_ARTICLES, MOCK_NOTIFICATIONS } from './constants';
+import { MOCK_ARTICLES, MOCK_NOTIFICATIONS, CATEGORY_SUBJECTS } from './constants';
 import { generateNewsFeed, performSearch } from './services/newsService';
 import { supabase } from './lib/supabaseClient';
 import type { User } from '@supabase/supabase-js';
@@ -13,22 +13,28 @@ import { SearchView } from './components/SearchView';
 import { AdminFeed } from './components/AdminFeed';
 import { LandingPage } from './components/LandingPage';
 import { AuthPage } from './components/AuthPage';
+import { Footer } from './components/Footer';
+
 import {
   Bell, Search, Newspaper, RefreshCw, Loader2,
   Sparkles, Home, ArrowLeft, X, Globe,
-  Briefcase, Monitor, Music, Trophy, FlaskConical, HeartPulse, MapPin, User as UserIcon
+  Briefcase, Monitor, Music, Trophy, FlaskConical, HeartPulse, MapPin, User as UserIcon,
+  TrendingUp, Landmark, GraduationCap, BookOpen, Leaf, Palette, Film, Smile, Map
 } from 'lucide-react';
 
 const TOPICS: { id: NewsTopic; label: string; icon: React.ReactNode }[] = [
-  { id: 'Trending', label: 'Manchetes', icon: <Sparkles className="w-4 h-4" /> },
-  { id: 'Mundo', label: 'Mundo', icon: <Globe className="w-4 h-4" /> },
-  { id: 'Brasil', label: 'Brasil', icon: <MapPin className="w-4 h-4" /> },
-  { id: 'Negócios', label: 'Negócios', icon: <Briefcase className="w-4 h-4" /> },
-  { id: 'Tecnologia', label: 'Tech', icon: <Monitor className="w-4 h-4" /> },
-  { id: 'Entretenimento', label: 'Cultura', icon: <Music className="w-4 h-4" /> },
-  { id: 'Esportes', label: 'Esportes', icon: <Trophy className="w-4 h-4" /> },
-  { id: 'Ciência', label: 'Ciência', icon: <FlaskConical className="w-4 h-4" /> },
-  { id: 'Saúde', label: 'Saúde', icon: <HeartPulse className="w-4 h-4" /> },
+  { id: 'Economia', label: 'Economia', icon: <TrendingUp className="w-4 h-4" /> },
+  { id: 'Política', label: 'Política', icon: <Landmark className="w-4 h-4" /> },
+  { id: 'Tecnologia', label: 'Tecnologia', icon: <Monitor className="w-4 h-4" /> },
+  { id: 'Concursos e Emprego', label: 'Concursos', icon: <Briefcase className="w-4 h-4" /> },
+  { id: 'Educação', label: 'Educação', icon: <BookOpen className="w-4 h-4" /> },
+  { id: 'Ciência e Saúde', label: 'Ciência & Saúde', icon: <HeartPulse className="w-4 h-4" /> },
+  { id: 'Natureza', label: 'Natureza', icon: <Leaf className="w-4 h-4" /> },
+  { id: 'Cultura', label: 'Cultura', icon: <Palette className="w-4 h-4" /> },
+  { id: 'Cinema', label: 'Cinema', icon: <Film className="w-4 h-4" /> },
+  { id: 'Música', label: 'Música', icon: <Music className="w-4 h-4" /> },
+  { id: 'Bem Estar', label: 'Bem Estar', icon: <Smile className="w-4 h-4" /> },
+  { id: 'Turismo e Viagem', label: 'Turismo', icon: <Map className="w-4 h-4" /> },
 ];
 
 type AppView = 'landing' | 'auth' | 'app';
@@ -42,7 +48,7 @@ const App: React.FC = () => {
 
   // Data State
   const [articles, setArticles] = useState<NewsArticle[]>(MOCK_ARTICLES);
-  const [selectedTopic, setSelectedTopic] = useState<NewsTopic>('Trending');
+  const [selectedTopic, setSelectedTopic] = useState<NewsTopic>('Economia');
   const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -238,7 +244,7 @@ const App: React.FC = () => {
               className="flex items-center gap-2 cursor-pointer group"
               onClick={() => {
                 setCurrentPage('feed');
-                setSelectedTopic('Trending');
+                setSelectedTopic('Economia');
                 setShowNotifications(false);
                 setSearchQuery('');
               }}
@@ -330,17 +336,36 @@ const App: React.FC = () => {
                 <p className="text-slate-400 font-bold text-sm">Escaneando o espectro de notícias...</p>
               </div>
             ) : (
-              <>
-                {selectedTopic === 'Trending' && featuredArticle && <ArticleCard article={featuredArticle} onClick={setSelectedArticle} featured />}
+              <div className="space-y-10">
+                {/* Subject Tags Selection */}
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Explorar Assuntos</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {(CATEGORY_SUBJECTS[selectedTopic] || []).map((subject, index) => (
+                      <button
+                        key={`${selectedTopic}-${index}`}
+                        onClick={() => {
+                          setSearchQuery(subject);
+                          handleSearch(undefined, subject);
+                        }}
+                        className="px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all shadow-sm"
+                      >
+                        {subject}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* News Articles Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {(selectedTopic === 'Trending' ? otherArticles : articles).map((article) => (
+                  {articles.map((article) => (
                     <ArticleCard key={article.id} article={article} onClick={setSelectedArticle} />
                   ))}
                 </div>
 
                 {/* ADMIN FEED SECTION - Mural da Verdade */}
-                {selectedTopic === 'Trending' && <AdminFeed posts={adminPosts} />}
-              </>
+                <AdminFeed posts={adminPosts} />
+              </div>
             )}
           </main>
         )}
@@ -365,7 +390,7 @@ const App: React.FC = () => {
 
       {/* Mobile Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-slate-200 p-4 md:hidden flex justify-around z-50">
-        <button onClick={() => { setCurrentPage('feed'); setSelectedTopic('Trending'); }} className={`p-2 ${currentPage === 'feed' ? 'text-indigo-600' : 'text-slate-400'}`}><Home className="w-6 h-6" /></button>
+        <button onClick={() => { setCurrentPage('feed'); setSelectedTopic('Economia'); }} className={`p-2 ${currentPage === 'feed' ? 'text-indigo-600' : 'text-slate-400'}`}><Home className="w-6 h-6" /></button>
         <button onClick={() => setIsMobileSearchOpen(true)} className="p-2 text-slate-400"><Search className="w-6 h-6" /></button>
         <button onClick={() => { setCurrentPage('profile'); }} className={`p-2 ${currentPage === 'profile' ? 'text-indigo-600' : 'text-slate-400'}`}><UserIcon className="w-6 h-6" /></button>
       </div>
@@ -404,6 +429,7 @@ const App: React.FC = () => {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 };
